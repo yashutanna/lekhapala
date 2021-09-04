@@ -5,7 +5,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = 3001;
   app.enableCors({
-    origin: "http://localhost:3000"
+    origin: "http://raspberrypi.local:3000/"
   });
   await app.listen(port);
 }
