@@ -16,7 +16,7 @@ export class AppController {
       from
     } = query
     const currentTime = Date.now();
-    const timeline = this.appService.getTimeline(from ? from : currentTime - (2 * hour));
+    const timeline = this.appService.getTimeline(from ? from : currentTime - (1 * day));
     return timeline;
   }
 
