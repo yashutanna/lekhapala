@@ -31,9 +31,9 @@ const useTimeline = () => {
   useEffect(() => {
     const getData = async () => {
       setLoading(true);
-      const { data: timeline } = await axios.get('http://localhost:3001');
-      const { data: blacklist } = await axios.get('http://localhost:3001/blacklist');
-      const { data: snapshot  } = await axios.get('http://localhost:3001/snapshot');
+      const { data: timeline } = await axios.get('http://raspberrypi.local:3001');
+      const { data: blacklist } = await axios.get('http://raspberrypi.local:3001/blacklist');
+      const { data: snapshot  } = await axios.get('http://raspberrypi.local:3001/snapshot');
       setTimeline(timeline);
       setBlacklist(blacklist);
       setSnapshot(snapshot);
