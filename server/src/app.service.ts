@@ -126,7 +126,7 @@ export class AppService {
     const results = timeline as TTimeline;
     const filtered = Object.keys(results).reduce((reduction, symbol) => ({
       ...reduction,
-      [symbol]: reduction[symbol].filter(entry => entry.time > from)
+      [symbol]: reduction[symbol].filter(entry => entry.time > Date.now() - from)
     }), results)
     return filtered;
   }

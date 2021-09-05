@@ -20,7 +20,6 @@ export default function Symbol({
         if (blacklist.includes(symbol)) {
           return null;
         }
-        console.log({ timeline, symbol });
         const dataPoints = timeline[symbol] || [];
 
         return (
