@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export type TTimlineData = {
   amount: number | string;
@@ -19,7 +19,9 @@ export interface TTimeline {
 
 export interface TSnapshot {totalUSDValue: number | string , totalEthValue: number | string  }
 
-const useTimeline = () => {
+export const TimelineContext = React.createContext({ loading: true, timeline: {} as TTimeline, blacklist: [] as string[], snapshot: {} as TSnapshot});
+
+const TimelineContextProvider: React.FunctionComponent = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [timeline, setTimeline] = useState<TTimeline>({});
   const [blacklist, setBlacklist] = useState<string[]>([]);
@@ -46,9 +48,11 @@ const useTimeline = () => {
     }
   }, []);
 
-  return {
-    timeline, blacklist, snapshot, loading
-  }
+  return (
+    <TimelineContext.Provider value={{ timeline, blacklist, snapshot, loading }} >
+        {children}
+    </TimelineContext.Provider>
+  )
 };
 
-export default useTimeline;
+export default TimelineContextProvider;

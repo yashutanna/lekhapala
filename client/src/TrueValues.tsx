@@ -1,11 +1,16 @@
-import { TTimeline } from "./useTimeline";
 import Symbol from "./Symbol";
+import { TimelineContext } from "./TimelineContext";
 
-export default function TrueValues({ timeline }: { timeline: TTimeline}) {
+export default function TrueValues() {
 
   return (
-    <div className="App" style={{ display: "flex", flexDirection: "row", flexFlow: "wrap" }}>
-      {Object.keys(timeline).map((symbol) => (<Symbol symbol={symbol} />))}
-    </div>
+    <TimelineContext.Consumer>
+      {({ timeline }) => (
+        <div className="App" style={{ display: "flex", flexDirection: "row", flexFlow: "wrap" }}>
+        {Object.keys(timeline).map((symbol) => (<Symbol symbol={symbol} />))}
+      </div>
+      )}
+    </TimelineContext.Consumer>
+    
   );
 }

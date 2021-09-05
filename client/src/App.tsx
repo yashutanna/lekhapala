@@ -8,11 +8,9 @@ import {
   Link
 } from "react-router-dom";
 import TrueValues from './TrueValues';
-import useTimeline from './useTimeline';
+import TimelineContextProvider from './TimelineContext';
 
 const App = () => {
-  const { timeline, snapshot, loading } = useTimeline();
-  console.log({ timeline, snapshot, loading });
   return (
     <Router>
       <div>
@@ -29,22 +27,19 @@ const App = () => {
             </li>
           </ul>
         </nav>
-
-        {
-          loading ? "Loading..." : (
-            <Switch>
-              <Route path="/scaled">
-                <ScaledValues timeline={timeline} />
-              </Route>
-              <Route path="/snapshot">
-                <Snapshot snapshot={snapshot} />
-              </Route>
-              <Route path="/">
-                <TrueValues timeline={timeline} />
-              </Route>
-            </Switch> 
-          )
-        }
+        <TimelineContextProvider>  
+          <Switch>
+            <Route path="/scaled">
+              <ScaledValues />
+            </Route>
+            <Route path="/snapshot">
+              <Snapshot />
+            </Route>
+            <Route path="/">
+              <TrueValues />
+            </Route>
+          </Switch> 
+        </TimelineContextProvider>
       </div>
     </Router>
   )
