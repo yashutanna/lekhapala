@@ -7,6 +7,10 @@ import customMapping from "./customMapping.json";
 import addresses from "./addresses.json";
 import BigNumber from "bignumber.js";
 import fs from "fs";
+import { InfluxDB } from '@influxdata/influxdb-client';
+import { Point } from '@influxdata/influxdb-client';
+const org = 'gv'
+const bucket = 'metrics'
 
 const limiter = new Bottleneck({
   minTime: 500,
@@ -40,12 +44,16 @@ export class AppService {
   priceInterval: NodeJS.Timeout;
   writeInterval: NodeJS.Timeout;
   timeline: TTimeline;
-  key: String;
-  
+  key: string;
+  influxKey: string;
+  influxClient: InfluxDB;
 
   constructor() {
     this.timeline = timeline as TTimeline;
     this.key = process.env.API_KEY;
+    this.influxKey = process.env.INFLUX_DB_KEY;
+    this.influxClient = new InfluxDB({ url: 'http://localhost:8086', token: this.influxKey });
+
     this.getPriceLoop();
     this.getPriceLoop = this.getPriceLoop.bind(this);
     this.writeLoop = this.writeLoop.bind(this);
@@ -113,10 +121,29 @@ export class AppService {
         }));
       }
     }));
-    Object.keys(allTokens).forEach(symbol => {
+    await Promise.all(Object.keys(allTokens).map(async symbol => {
+      
+      const writeApi = this.influxClient.getWriteApi(org, bucket)
+      writeApi.useDefaultTags({ host: 'host1' })
       const token = allTokens[symbol];
+      const usdValuePoint = new Point(symbol).floatField('value_usd', token.valueUSD).timestamp(new Date(token.timestamp));
+      const ethValuePoint = new Point(symbol).floatField('value_eth', token.valueETH).timestamp(new Date(token.timestamp));
+      const usdPricePoint = new Point(symbol).floatField('price_usd', token.priceUSD).timestamp(new Date(token.timestamp));
+      try {
+        writeApi.writePoints([
+          usdValuePoint,
+          ethValuePoint,
+          usdPricePoint,
+        ]);
+        await writeApi.close();
+        console.log('FINISHED')
+      } catch (e) {
+        console.error(e);
+        console.log('\\nFinished ERROR');
+      }
+      
       newTimeline[symbol] = [...(newTimeline[symbol] || []), {time: token.timestamp, data: {amount: token.amount, priceUSD: token.priceUSD, valueUSD: token.valueUSD, valueETH: token.valueETH}}]
-    });
+    }));
     console.log('adding to timeline');
     this.timeline = newTimeline;
     console.log('adding to timeline... done');
