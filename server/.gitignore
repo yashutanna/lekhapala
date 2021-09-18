@@ -37,3 +37,4 @@ lerna-debug.log*
 timeline.json
 addresses.json
 blacklist.json
+influxdb
